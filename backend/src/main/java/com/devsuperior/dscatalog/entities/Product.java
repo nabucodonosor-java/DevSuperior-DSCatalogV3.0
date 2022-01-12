@@ -1,10 +1,8 @@
 package com.devsuperior.dscatalog.entities;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -15,8 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 /*
@@ -24,38 +20,35 @@ import javax.persistence.Table;
  * Bootcamp DevSuperior Spring + React
  * Table class tb_product / Classe da tabela tb_product
  */
-
 @Entity
 @Table(name = "tb_product")
 public class Product implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	// @Column cria um campo do tipo text e não varchar podendo assim aceitar textos gdes
+	
 	@Column(columnDefinition = "TEXT")
 	private String description;
-	private BigDecimal price;
-	@Column(columnDefinition = "TEXT")
+	private Double price;
 	private String imgUrl;
-	// anotação abaixo grava o horário no padrão UTC
+	
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant date;
-	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-	private Instant createdAt;
-	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-	private Instant updatedAt;
-	
+
 	@ManyToMany
-	@JoinTable(name = "tb_product_category", joinColumns = @JoinColumn(name = "product_id"), 
-	inverseJoinColumns = @JoinColumn(name = "category_id"))
-	private Set<Category> categories = new HashSet<>();
+	@JoinTable(
+			name = "tb_product_category",
+			joinColumns = @JoinColumn(name = "product_id"),
+			inverseJoinColumns = @JoinColumn(name = "category_id"))
+	Set<Category> categories = new HashSet<>();
+
+	public Product() {
+	}
 	
-	public Product() {}
-	
-	public Product(Long id, String name, String description, BigDecimal price, String imgUrl, Instant date) {
+	public Product(Long id, String name, String description, Double price, String imgUrl, Instant date) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -88,11 +81,11 @@ public class Product implements Serializable {
 		this.description = description;
 	}
 
-	public BigDecimal getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(BigDecimal price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
@@ -104,18 +97,6 @@ public class Product implements Serializable {
 		this.imgUrl = imgUrl;
 	}
 
-	public Set<Category> getCategories() {
-		return categories;
-	}
-	
-	public Instant getCreatedAt() {
-		return createdAt;
-	}
-
-	public Instant getUpdatedAt() {
-		return updatedAt;
-	}
-	
 	public Instant getDate() {
 		return date;
 	}
@@ -124,21 +105,16 @@ public class Product implements Serializable {
 		this.date = date;
 	}
 
-	// sempre que for inserido um registro no DB
-	@PrePersist
-	public void prePersit() {
-		createdAt = Instant.now();
-	}
-	
-	// sempre que for atualizado um registro no DB
-	@PreUpdate
-	public void preUpdated() {
-		updatedAt = Instant.now();
+	public Set<Category> getCategories() {
+		return categories;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
 	}
 
 	@Override
@@ -150,6 +126,12 @@ public class Product implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Product other = (Product) obj;
-		return Objects.equals(id, other.id);
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
+
 }

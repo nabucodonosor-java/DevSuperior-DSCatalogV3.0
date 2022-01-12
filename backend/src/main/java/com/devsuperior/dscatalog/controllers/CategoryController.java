@@ -31,11 +31,11 @@ public class CategoryController {
 	@GetMapping
 	public ResponseEntity<Page<CategoryDto>> findAll(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
-			@RequestParam(value = "size", defaultValue = "12") Integer size,
+			@RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
 			@RequestParam(value = "direction", defaultValue = "ASC") String direction,
-			@RequestParam(value = "sort", defaultValue = "name") String sort) {
+			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
 		
-		PageRequest pageRequest = PageRequest.of(page, size, Direction.valueOf(direction), sort);
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
 		
 		Page<CategoryDto> list = service.findAllPaged(pageRequest);
 		return ResponseEntity.ok().body(list);
@@ -43,8 +43,8 @@ public class CategoryController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<CategoryDto> findById(@PathVariable Long id) {
-		CategoryDto dto = service.findById(id);
-		return ResponseEntity.ok().body(dto);
+		CategoryDto entity = service.findById(id);
+		return ResponseEntity.ok().body(entity);
 	}
 	
 	@PostMapping

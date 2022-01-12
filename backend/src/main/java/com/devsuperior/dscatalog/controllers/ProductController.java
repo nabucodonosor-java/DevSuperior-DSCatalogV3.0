@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.devsuperior.dscatalog.dto.ProductDto;
+import com.devsuperior.dscatalog.dto.UriDto;
 import com.devsuperior.dscatalog.services.ProductService;
 
 @RestController
@@ -35,12 +37,12 @@ public class ProductController {
 			@RequestParam(value = "categoryId", defaultValue = "0") Long categoryId,
 			@RequestParam(value = "name", defaultValue = "") String name,
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
-			@RequestParam(value = "size", defaultValue = "12") Integer size,
+			@RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
 			@RequestParam(value = "direction", defaultValue = "ASC") String direction,
-			@RequestParam(value = "sort", defaultValue = "name") String sort) {
+			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
 		
-		PageRequest pageRequest = PageRequest.of(page, size, Direction.valueOf(direction), sort);
-		Page<ProductDto> list = service.findAll(pageRequest, categoryId, name.trim());
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		Page<ProductDto> list = service.findAllPaged(pageRequest, categoryId, name.trim());
 			
 		return ResponseEntity.ok().body(list);		
 	}
@@ -57,6 +59,12 @@ public class ProductController {
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
+	}
+	
+	@PostMapping("/image")
+	public ResponseEntity<UriDto> uploadFile(@RequestParam("file") MultipartFile file) {
+		UriDto dto = service.uploadFile(file);
+		return ResponseEntity.ok().body(dto);
 	}
 	
 	@PutMapping("/{id}")

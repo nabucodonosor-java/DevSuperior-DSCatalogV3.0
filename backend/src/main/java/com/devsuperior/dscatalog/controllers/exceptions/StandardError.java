@@ -6,21 +6,21 @@ import java.time.Instant;
 public class StandardError implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Instant dataAtual;
+	private Instant timestamp;
 	private Integer status;
-	private String erro;
-	private String mensagem;
-	private String caminho;
+	private String error;
+	private String message;
+	private String path;
 
 	public StandardError() {
 	}
 
-	public Instant getDataAtual() {
-		return dataAtual;
+	public Instant getTimestamp() {
+		return timestamp;
 	}
 
-	public void setDataAtual(Instant dataAtual) {
-		this.dataAtual = dataAtual;
+	public void setTimestamp(Instant timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public Integer getStatus() {
@@ -31,28 +31,27 @@ public class StandardError implements Serializable {
 		this.status = status;
 	}
 
-	public String getErro() {
-		return erro;
+	public String getError() {
+		return error;
 	}
 
-	public void setErro(String erro) {
-		this.erro = erro;
+	public void setError(String error) {
+		this.error = error;
 	}
 
-	public String getMensagem() {
-		return mensagem;
+	public String getMessage() {
+		return message;
 	}
 
-	public void setMensagem(String mensagem) {
-		this.mensagem = mensagem;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
-	public String getCaminho() {
-		return caminho;
+	public String getPath() {
+		return path;
 	}
 
-	public void setCaminho(String caminho) {
-		this.caminho = caminho;
+	public void setPath(String path) {
+		this.path = path;
 	}
-
 }

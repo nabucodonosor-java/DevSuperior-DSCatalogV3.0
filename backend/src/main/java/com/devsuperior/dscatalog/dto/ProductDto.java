@@ -1,11 +1,15 @@
 package com.devsuperior.dscatalog.dto;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 
 import org.springframework.data.domain.Page;
 
@@ -16,16 +20,23 @@ public class ProductDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Long id;
+	@Size(min = 5, max = 60, message = "Nome deve ter no mínimo e no máximo 5 e 60 caracteres respectivamente")
+	@NotBlank(message = "Campo obrigatório")
 	private String name;
+	@NotBlank(message = "Campo obrigatório")
 	private String description;
-	private BigDecimal price;
+	@Positive(message = "Valor não pode ser negativo!")
+	private Double price;
 	private String imgUrl;
+	@PastOrPresent(message = "A data não pode ser futura")
 	private Instant date;
-	private List<CategoryDto> categories = new ArrayList<>();
-	
-	public ProductDto() {}
 
-	public ProductDto(Long id, String name, String description, BigDecimal price, String imgUrl, Instant date) {
+	private List<CategoryDto> categories = new ArrayList<>();
+
+	public ProductDto() {
+	}
+
+	public ProductDto(Long id, String name, String description, Double price, String imgUrl, Instant date) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -35,33 +46,17 @@ public class ProductDto implements Serializable {
 	}
 
 	public ProductDto(Product entity) {
-		id = entity.getId();
-		name = entity.getName();
-		description = entity.getDescription();
-		price = entity.getPrice();
-		imgUrl = entity.getImgUrl();
-		date = entity.getDate();
+		this.id = entity.getId();
+		this.name = entity.getName();
+		this.description = entity.getDescription();
+		this.price = entity.getPrice();
+		this.imgUrl = entity.getImgUrl();
+		this.date = entity.getDate();
 	}
-	
-	// Este construtor tem o objetivo de adicionar ao produto uma lista de categorias
-	// This constructor aims to add a list of categories to the product
+
 	public ProductDto(Product entity, Set<Category> categories) {
 		this(entity);
-		// adicionando no Set da entidade as categorias que estão no DTO 
-		// função de alta ordem - expressões lambdas
 		categories.forEach(cat -> this.categories.add(new CategoryDto(cat)));
-	}
-	
-	public Instant getDate() {
-		return date;
-	}
-
-	public void setDate(Instant date) {
-		this.date = date;
-	}
-
-	public List<CategoryDto> getCategories() {
-		return categories;
 	}
 
 	public Long getId() {
@@ -88,11 +83,11 @@ public class ProductDto implements Serializable {
 		this.description = description;
 	}
 
-	public BigDecimal getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(BigDecimal price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
@@ -104,8 +99,19 @@ public class ProductDto implements Serializable {
 		this.imgUrl = imgUrl;
 	}
 
-	public static Page<ProductDto> converter(Page<Product> page) {
-		return page.map(ProductDto::new);
+	public Instant getDate() {
+		return date;
 	}
-	
+
+	public void setDate(Instant date) {
+		this.date = date;
+	}
+
+	public List<CategoryDto> getCategories() {
+		return categories;
+	}
+
+	public static Page<ProductDto> converter(Page<Product> list) {
+		return list.map(ProductDto::new);
+	}	
 }

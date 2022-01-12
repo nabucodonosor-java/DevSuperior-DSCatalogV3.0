@@ -1,10 +1,8 @@
 package com.devsuperior.dscatalog.entities;
 
 import java.io.Serializable;
-
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -17,9 +15,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
-import com.devsuperior.dscatalog.dto.CategoryDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /*
  * Autor: Franco Brasil
  * Bootcamp DevSuperior Spring + React
@@ -30,32 +25,30 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "tb_category")
 public class Category implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
-	
+
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant createdAt;
+
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
 	private Instant updatedAt;
 	
 	@ManyToMany(mappedBy = "categories")
-	@JsonIgnore
 	private Set<Product> products = new HashSet<>();
-	
-	public Category() {}
 
+	public Category() {
+	}
+	
+	
 	public Category(Long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
-	
-	public Category(CategoryDto dto) {
-		id = dto.getId();
-		name = dto.getName();
-	}
+
 
 	public Set<Product> getProducts() {
 		return products;
@@ -76,7 +69,7 @@ public class Category implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public Instant getCreatedAt() {
 		return createdAt;
 	}
@@ -84,14 +77,12 @@ public class Category implements Serializable {
 	public Instant getUpdatedAt() {
 		return updatedAt;
 	}
-	
-	// sempre que for inserido um registro no DB
+
 	@PrePersist
 	public void prePersit() {
 		createdAt = Instant.now();
 	}
-	
-	// sempre que for atualizado um registro no DB
+
 	@PreUpdate
 	public void preUpdated() {
 		updatedAt = Instant.now();
@@ -99,7 +90,10 @@ public class Category implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
 	}
 
 	@Override
@@ -111,6 +105,12 @@ public class Category implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Category other = (Category) obj;
-		return Objects.equals(id, other.id);
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
+
 }

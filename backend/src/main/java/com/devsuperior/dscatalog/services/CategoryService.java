@@ -25,20 +25,22 @@ public class CategoryService {
 	private CategoryRepository repository;
 	
 	@Transactional(readOnly = true)
-	public Page<CategoryDto> findAllPaged(PageRequest page) {
-		return CategoryDto.converter(repository.findAll(page));
+	public Page<CategoryDto> findAllPaged(PageRequest pageRequest) {
+		Page<Category> list = repository.findAll(pageRequest);
+		return CategoryDto.converter(list);
 	}
 	
 	@Transactional(readOnly = true)
 	public CategoryDto findById(Long id) {
-		Optional<Category> obj = repository.findById(id);
-		return new CategoryDto(obj.orElseThrow(() -> new ObjectNotFoundException("Categoria não encontrada!")));
+		Optional<Category> optional = repository.findById(id);
+		Category category =  optional.orElseThrow(() -> new ObjectNotFoundException("Entity Not Found"));
+		return new CategoryDto(category);
 	}
 	
 	@Transactional
 	public CategoryDto insert(CategoryDto dto) {
 		Category entity = new Category();
-		copyToEntity(dto, entity);
+		entity.setName(dto.getName());
 		entity = repository.save(entity);
 		return new CategoryDto(entity);
 	}
@@ -46,29 +48,25 @@ public class CategoryService {
 	@Transactional
 	public CategoryDto update(Long id, CategoryDto dto) {
 		try {
-		Category entity = repository.getOne(id);
-		copyToEntity(dto, entity);
-		entity = repository.save(entity);
-		return new CategoryDto(entity);
+			Category category = repository.getOne(id);
+			category.setName(dto.getName());
+			category = repository.save(category);
+			return new CategoryDto(category);
 		} catch (EntityNotFoundException e) {
-			throw new ObjectNotFoundException("Categoria não encontrada!");
+			throw new ObjectNotFoundException("Id Not Found " + id);
 		}
 	}
-	
+
 	public void delete(Long id) {
 		try {
 			repository.deleteById(id);
+			
 		} catch (EmptyResultDataAccessException e) {
-			throw new ObjectNotFoundException("Categoria não encontrada!");
+			throw new ObjectNotFoundException("Id Not Found " + id);
 		} catch (DataIntegrityViolationException e) {
-			throw new DatabaseException("Violação crítica no DB");
+			throw new DatabaseException("Integrity Violation");
 		}
 		
-	}
-
-	private void copyToEntity(CategoryDto dto, Category entity) {
-		
-		entity.setName(dto.getName());
 	}
 
 }
